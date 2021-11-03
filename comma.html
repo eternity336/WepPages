@@ -1,0 +1,128 @@
+<html>
+<style>
+  :root {
+    --color1: #4f5152;
+    --color2: #80919c;
+    --color3: #4c6d8f;
+  }
+  
+  div.myForm {
+    color: white;
+    background: repeating-radial-gradient(@stripe(#023967 4px, #c5dff5 2px));
+    border-style: groove;
+    padding: 30px;
+    border-radius: 10px;
+    text-align: center;
+    html
+    height: 100%;
+    background: radial-gradient(ellipse at top, #5091DD 50%, #030617 100%);
+  }
+
+  BODY {
+  background: radial-gradient(4rem,
+    rgba(255,255,255,0) 80%,
+    var(--color1) 80%, var(--color1) 99%,
+    rgba(255,255,255, 0)
+    ) 0 0,
+    radial-gradient(4rem,
+    rgba(255,255,255,0) 80%,
+    var(--color1) 80%, var(--color1) 99%,
+    rgba(255,255,255, 0)
+    ) 4em 4em,
+    radial-gradient(4.7rem,
+    rgba(255,255,255,0) 50%,
+    var(--color2) 50%,
+    var(--color2) 75%, var(--color2) 99%,
+    rgba(255,255,255, 0)
+    ) 4em 4em,
+    radial-gradient(4.7rem,
+    rgba(255,255,255,0) 50%,
+    var(--color2) 50%,
+    var(--color2) 75%, var(--color2) 99%,
+    rgba(255,255,255, 0)
+    ) 0 0;
+  background-size: 8rem 8rem;
+  background-color: var(--color3);
+  }
+
+  h2 {
+    color: white;
+  }
+
+  textarea {
+    border-radius: 10px;
+    width: 100%;
+    color:black;
+  }
+
+  button {
+    border-radius: 10px;
+    color: black;
+  }
+</style>
+
+<div class='myForm'>
+<H1>REDSHIFT IN Formatter</H1>
+<p>Select local CSV or TXT File:</p>
+<input id="csv" accept=".csv,.txt" type="file"/>
+<p></p>
+<h2>INPUT:</h2>
+<p></p>
+<textarea id="input" onkeyup="inputChange();" rows="10" cols="200"></textarea>
+<p></p>
+<h2>OUTPUT:</h2>
+<p></p>
+<textarea id="output" rows="10" cols="200"></textarea>
+
+<script>
+    var text = "";
+    var fileInput = document.getElementById("csv");
+    var input = document.getElementById('input');
+    var output = document.getElementById('output');
+    readFile = function () {
+        var reader = new FileReader();
+        reader.onload = function () {
+            input.value = reader.result.replace(/,/g,'\r\n').replace(/\r\n/g,'\n').replace(/\n\n/g,'\n');
+            if (input.value.includes(',')){
+                text = returnList(input.value, ',');
+            }else{
+                text = returnList(input.value, '\n');
+            }
+
+            output.value = text;
+        };
+        // start reading the file. When it is done, calls the onload event defined above.
+        reader.readAsText(fileInput.files[0]);
+    };
+
+    function inputChange(){
+      if (input.value.includes('\r\n')){
+          text = returnList(input.value, '\r\n');
+      }else if(input.value.includes(',')){
+          text = returnList(input.value, ',');
+      }else if(input.value.includes('\n')){
+          text = returnList(input.value, '\n');
+      }else{
+          text = returnList(input.value, ' ');
+      }
+
+      output.value = text;
+    };
+
+    function returnList(text, filter){
+        return '("' + text.split(filter).filter(e => e.length > 0).map(s => s.trim()).join('","') + '")';
+    };
+
+    function copyText(){
+        output.select();
+        document.execCommand("Copy");
+        window.getSelection().removeAllRanges();
+    };
+
+    fileInput.addEventListener('change', readFile);
+</script>
+
+</p>
+<button onclick="copyText()">COPY</button>
+</div>
+</html>
